@@ -10,5 +10,5 @@ Made with:
 
 # Instructions
 
-1. Download or clone the repo and run index.html on a local server.
+1. Download or clone the source code and run it on a local web server.
 2. Have fun :)
