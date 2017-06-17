@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>three.js - ejemplo2</title>
+  <style>
+  
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+    
+  </style>
+</head>
+<body>
+
+<!--<script src="js/jquery-2.1.4.js"></script>-->
+<script src="js/min/three.min.js"></script>
+<script src="js/OBJLoader.js"></script>
+<script src="js/jquery-2.1.4.js"></script>
+<script src="js/jquery.mousedirection.js"></script>
+<script>
+  
+var scene, camera, renderer, controls;
+var eye1,eye2;
+var light1,light2,light3,light4;
+  
+window.onload=function(){
+  init();
+  animate();
+}
+
+function init() {
+
+  camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeight, 0.1, 1000 );
+  camera.position.z = 280;
+  
+  renderer = new THREE.WebGLRenderer();
+  renderer.setSize( window.innerWidth, window.innerHeight );
+  document.body.appendChild( renderer.domElement );
+
+  scene = new THREE.Scene();
+
+  var directionalLight = new THREE.DirectionalLight( 0xf2f2f2, 1 );
+  directionalLight.position.set( 200, 100, 800 );
+  scene.add( directionalLight );
+  
+  light1 = new THREE.PointLight( 0xff0040, 2, 50 );
+  scene.add( light1 );
+
+  light2 = new THREE.PointLight( 0x0040ff, 2, 50 );
+  scene.add( light2 );
+
+  light3 = new THREE.PointLight( 0x80ff80, 2, 50 );
+  scene.add( light3 );
+
+  light4 = new THREE.PointLight( 0xffaa00, 2, 50 );
+  scene.add( light4 );
+  
+  var normalEye = THREE.ImageUtils.loadTexture( 'models/Eyeball/textures/Eye_N.jpg' );
+
+	var manager = new THREE.LoadingManager();
+
+	var texture = new THREE.Texture();
+
+	var ironman_textureLoader = new THREE.ImageLoader( manager );
+	ironman_textureLoader.load( 'models/Eyeball/textures/Eye_D2.jpg', function ( image ) {
+		texture.image = image;
+		texture.needsUpdate = true;
+	} );
+  
+    //object = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial( { color: 0x555555, specular: 0xffffff, shininess: 50 }  )  );
+
+    var ironman_modelLoader = new THREE.OBJLoader();
+    ironman_modelLoader.load( 'models/Eyeball/eyeball.obj', function ( object ) {
+          eye1 = object;
+          eye1.traverse( function ( child ) {
+              if ( child instanceof THREE.Mesh ) {
+                  child.material = new THREE.MeshPhongMaterial({
+                     map: texture,
+                     color: 0xf2f2f2, 
+                     normalMap: normalEye,
+                     specular: 0xffffff, 
+                     shininess: 100
+                  })
+              }
+          } );
+      //console.log(object);
+          eye1.scale.set(30,30,30);
+          eye1.position.y = 0;
+          eye1.position.x = 100;
+          eye1.rotation.y = 6;
+          scene.add( eye1 );
+    } );
+  
+    var ironman_modelLoader = new THREE.OBJLoader();
+    ironman_modelLoader.load( 'models/Eyeball/eyeball.obj', function ( object ) {
+          eye2 = object;
+          eye2.traverse( function ( child ) {
+              if ( child instanceof THREE.Mesh ) {
+                  child.material = new THREE.MeshPhongMaterial({
+                     map: texture,
+                     color: 0xf2f2f2, 
+                     normalMap: normalEye,
+                     specular: 0xffffff, 
+                     shininess: 100
+                  })
+              }
+          } );
+     //console.log(object);
+          eye2.scale.set(30,30,30);
+          eye2.position.y = 0;
+          eye2.position.x = -100;
+          eye2.rotation.y = -6;
+          scene.add( eye2 );
+    } );
+
+  window.addEventListener( 'resize', onWindowResize, false );
+}
+
+function animate() {
+  requestAnimationFrame( animate );
+  
+  var time = Date.now() * 0.0005;
+  
+  light1.position.x = Math.sin( time * 1.7 ) * 80;
+  light1.position.y = Math.cos( time * 1.5 ) * 100;
+  light1.position.z = Math.cos( time * 1.3 ) * 80;
+
+  light2.position.x = Math.cos( time * 1.3 ) * 80;
+  light2.position.y = Math.sin( time * 1.5 ) * 100;
+  light2.position.z = Math.sin( time * 1.7 ) * 80;
+
+  light3.position.x = Math.sin( time * 1.7 ) * 80;
+  light3.position.y = Math.cos( time * 1.3 ) * 100;
+  light3.position.z = Math.sin( time * 1.5 ) * 80;
+
+  light4.position.x = Math.sin( time * 1.3 ) * 80;
+  light4.position.y = Math.cos( time * 1.7 ) * 100;
+  light4.position.z = Math.sin( time * 1.5 ) * 80;
+
+  render();
+}
+
+function render() {
+  renderer.render( scene, camera );
+}
+  
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize( window.innerWidth, window.innerHeight );
+}
+</script>
+<script type='text/javascript'>
+    $( document ).ready(function() {
+        $.mousedirection();
+        $("body").bind("mousedirection", function (e) {
+          if( eye1 && eye2 ){
+            switch(e.direction){
+              case "right":
+                eye1.rotation.y += 0.01;
+                eye2.rotation.y += 0.01;
+              break;
+              case "left":
+                eye1.rotation.y -= 0.01;
+                eye2.rotation.y -= 0.01;
+              break;
+              case "up":
+                eye1.rotation.x -= 0.01;
+                eye2.rotation.x -= 0.01;
+              break;
+              case "down":
+                eye1.rotation.x += 0.01;
+                eye2.rotation.x += 0.01;
+              break;
+              case "top-right":
+                eye1.rotation.y += 0.01;
+                eye2.rotation.y += 0.01;
+                eye1.rotation.x -= 0.01;
+                eye2.rotation.x -= 0.01;
+              break;
+              case "top-left":
+                eye1.rotation.y -= 0.01;
+                eye2.rotation.y -= 0.01;
+                eye1.rotation.x -= 0.01;
+                eye2.rotation.x -= 0.01;
+              break;
+              case "bottom-right":
+                eye1.rotation.y += 0.01;
+                eye2.rotation.y += 0.01;
+                eye1.rotation.x += 0.01;
+                eye2.rotation.x += 0.01;
+              break;
+              case "bottom-left":
+                eye1.rotation.y -= 0.01;
+                eye2.rotation.y -= 0.01;
+                eye1.rotation.x += 0.01;
+                eye2.rotation.x += 0.01;
+              break;
+            }
+          }  
+        });
+    });
+</script>
+</body>
+</html>
